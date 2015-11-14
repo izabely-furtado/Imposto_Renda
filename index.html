@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Imposto renda : Exercício 4 de 8 da Lista de Padrões de Projeto">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Imposto renda</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/izabely-furtado/Imposto_Renda">View on GitHub</a>
+
+          <h1 id="project_title">Imposto renda</h1>
+          <h2 id="project_tagline">Exercício 4 de 8 da Lista de Padrões de Projeto</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/izabely-furtado/Imposto_Renda/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/izabely-furtado/Imposto_Renda/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a id="diagrama-do-padrão-estrategia" class="anchor" href="#diagrama-do-padr%C3%A3o-estrategia" aria-hidden="true"><span class="octicon octicon-link"></span></a>Diagrama do Padrão Estrategia</h3>
+
+<p>O diagrama a seguir representa como foi usado o padrão estratégia para a resolução do problema.</p>
+
+<p><img src="https://github.com/izabely-furtado/Imposto_Renda/blob/master/diagramas/Class%20DiagramPadraoStrategy.png?raw=true" alt=""></p>
+
+<h3>
+<a id="explicação" class="anchor" href="#explica%C3%A7%C3%A3o" aria-hidden="true"><span class="octicon octicon-link"></span></a>Explicação</h3>
+
+<p><strong>Participantes</strong></p>
+
+<ul>
+<li>
+<strong>ICalculaImposto</strong>: É uma interface comum para todas as subclasses, ou para todos os algoritmos que são suportados. O Contexto usa essa interface para chamar uma das subclasses CalcImpostoX ou um dos algoritmos definidos.</li>
+<li>
+<strong>CalculaImpostoStrategy</strong>: A classe concreta que implementa a interface ICalculaImposto e suas subclasses estão definidas de modo a cobrir cada faixa abordada no imposto de renda. </li>
+<li>
+<strong>ImpostoRenda</strong>: É aquele que vai acessar um dos algoritmos das subclasses de interface ICalculaImposto.</li>
+</ul>
+
+<p><strong>Implementação</strong></p>
+
+<p>Na classe que acessa os algoritmos em si, foi decidido colocar a lista de estratégias e o salário para facilitar o processo de verificação que ocorre na função <strong>+calcularImpostoRenda()</strong>. Sendo assim na criação já é setadas as faixas possíveis de imposto de renda e o salário a ser conferiso
+`
+public class ImpostoRenda{
+    List estrategias;
+    double salario;</p>
+
+<pre><code>ImpostoRenda(double salario){
+    //criando as estrategias
+    CalcImpostoFaixa1 f1 = new CalcImpostoFaixa1();
+    CalcImpostoFaixa2 f2 = new CalcImpostoFaixa2();
+    CalcImpostoFaixa3 f3 = new CalcImpostoFaixa3();
+    CalcImpostoFaixa4 f4 = new CalcImpostoFaixa4();
+    CalcImpostoFaixa5 f5 = new CalcImpostoFaixa5();
+    //setando as estrategias
+    this.estrategias = new ArrayList();
+    this.estrategias.add(f1);
+    this.estrategias.add(f2);
+    this.estrategias.add(f3);
+    this.estrategias.add(f4);
+    this.estrategias.add(f5);
+    //setando o salario
+    this.salario = salario;
+}
+
+public double calcularImpostoRenda() {
+    double imposto = -1;
+    CalculaImpostoStrategy estrategiaUse;
+    //adequando o estrategia a ser usada para o salario
+    for (CalculaImpostoStrategy estrategia: this.estrategias){
+        if (salario &gt;= estrategia.getLimInferior() &amp;&amp; this.salario &lt;= estrategia.getLimSuperior()){
+            imposto = estrategia.calcularImpostoRenda(this.salario);
+        }
+    }
+    if(imposto == -1){
+        throw new UnsupportedOperationException("Salário negativo não é considerado\n");
+    }
+    return imposto;
+}
+</code></pre>
+
+<p>`</p>
+
+<p>Enquanto isso o as Faixas de Imposto de Renda são criadas da seguinte forma:</p>
+
+<p>Na Classe abstrata é pedido a inserção de limites e da aliquota
+`
+public abstract class CalculaImpostoStrategy implements ICalculaImposto{
+    protected double limiteInferior;
+    protected double limiteSuperior;
+    protected double aliquota;</p>
+
+<pre><code>CalculaImpostoStrategy(double limInferior, double limSuperior, double aliquota){
+    this.limiteInferior = limInferior;
+    this.limiteSuperior = limSuperior;
+    this.aliquota = aliquota;
+}
+</code></pre>
+
+<p>}
+`</p>
+
+<p>Já numa Faixa é criada da seguinte forma:</p>
+
+<p>`
+public class CalcImpostoFaixa5 extends CalculaImpostoStrategy{</p>
+
+<pre><code>public CalcImpostoFaixa5() {
+    super(4271.59, Double.MAX_VALUE, 0.275);
+}
+</code></pre>
+
+<p>}
+`</p>
+
+<h3>
+<a id="motivações" class="anchor" href="#motiva%C3%A7%C3%B5es" aria-hidden="true"><span class="octicon octicon-link"></span></a>Motivações</h3>
+
+<p>Entre os benefícios do padrão Strategy podem-se citar:</p>
+
+<ul>
+<li>a reutilização por parte do Contexto que permite escolher entre uma família de algoritmos que possuem funcionalidades em comum; </li>
+<li>os algoritmos em classes Strategy possuem variações do seus algoritmos independentemente do seu contexto, assim é mais fácil utilizá-los, trocá-los, compreende-los e estende-los; </li>
+<li>diminuição ou eliminação da lógica condicional clarificando ainda mais os algoritmos; </li>
+<li>a Strategy permite que se escolham diferentes implementações do mesmo comportamento; utilizando Strategy há uma grande simplificação na classe ao mover variações de um algoritmo para uma hierarquia; </li>
+<li>habilita-se que um algoritmo seja substituído por outro em tempo de execução.</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Imposto renda maintained by <a href="https://github.com/izabely-furtado">izabely-furtado</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
