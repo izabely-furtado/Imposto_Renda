@@ -39,7 +39,7 @@ public class ImpostoRenda{
 
     public double calcularImpostoRenda() {
         double imposto = -1;
-        CalculaImpostoStrategy estrategiaUse;
+        //CalculaImpostoStrategy estrategiaUse;
         //adequando o estrategia a ser usada para o salario
         for (CalculaImpostoStrategy estrategia: this.estrategias){
             if (salario >= estrategia.getLimInferior() && this.salario <= estrategia.getLimSuperior()){
